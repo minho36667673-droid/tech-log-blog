@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import config from '../../blog.config.js';
+---
+
+<BaseLayout title={`소개 | ${config.name}`} description={`${config.name}에 대해 소개합니다.`}>
+  <div class="container" style="padding-top: 3rem; padding-bottom: 4rem; max-width: 680px;">
+    <h1 style="font-size: 1.75rem; font-weight: 800; margin-bottom: 1.5rem;">블로그 소개</h1>
+
+    <p style="margin-bottom: 1.25rem;">
+      안녕하세요, <strong>{config.name}</strong>에 오신 것을 환영합니다.
+    </p>
+
+    <p style="margin-bottom: 1.25rem;">
+      이 블로그는 {config.mainCategory} 분야의 정확하고 실용적인 정보를 제공하기 위해 운영됩니다.
+      복잡하고 어려운 {config.mainCategory} 관련 정보를 누구나 이해하기 쉽게 전달하는 것이 목표입니다.
+    </p>
+
+    <h2 style="font-size: 1.25rem; font-weight: 700; margin: 2rem 0 0.75rem;">다루는 주제</h2>
+    <ul style="padding-left: 1.5rem; line-height: 2;">
+      {config.subCategories.map(cat => <li>{cat}</li>)}
+    </ul>
+
+    <h2 style="font-size: 1.25rem; font-weight: 700; margin: 2rem 0 0.75rem;">작성자</h2>
+    <p style="margin-bottom: 1rem;">
+      <strong>{config.author.name}</strong><br />
+      {config.author.bio}
+    </p>
+
+    <h2 style="font-size: 1.25rem; font-weight: 700; margin: 2rem 0 0.75rem;">면책 조항</h2>
+    <p style="color: var(--color-text-muted); font-size: 0.9rem; line-height: 1.8;">
+      본 블로그의 정보는 참고용으로만 활용하시기 바랍니다.
+      중요한 결정을 내리기 전에는 반드시 전문가와 상담하시기 바랍니다.
+      블로그에 게재된 정보의 정확성을 위해 노력하지만, 내용의 완전성이나 정확성을 보장하지 않습니다.
+    </p>
+
+    <div style="margin-top: 2rem; padding: 1.25rem; background: var(--color-bg-secondary); border-radius: 8px;">
+      <strong>문의:</strong> <a href={`mailto:${config.social.email}`}>{config.social.email}</a>
+    </div>
+  </div>
+</BaseLayout>
