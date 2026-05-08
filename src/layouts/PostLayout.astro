@@ -1,0 +1,106 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import config from '../../blog.config.js';
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  category: string;
+  tags: string[];
+  author: string;
+}
+
+const { title, description, pubDate, updatedDate, category, tags, author } = Astro.props;
+
+const formattedPubDate = pubDate.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+const formattedUpdatedDate = updatedDate?.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+
+// JSON-LD 구조화 데이터 (Google SEO)
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": title,
+  "description": description,
+  "datePublished": pubDate.toISOString(),
+  "dateModified": (updatedDate || pubDate).toISOString(),
+  "author": {
+    "@type": "Person",
+    "name": author || config.author.name
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": config.name,
+    "url": config.siteUrl
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": new URL(Astro.url.pathname, config.siteUrl).href
+  }
+};
+---
+
+<BaseLayout title={title} description={description} type="article" pubDate={pubDate.toISOString()}>
+  <!-- JSON-LD 구조화 데이터 -->
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <article>
+    <div class="container">
+      <!-- 포스트 헤더 -->
+      <header class="post-header">
+        <div class="category">{category}</div>
+        <h1>{title}</h1>
+        <div class="post-meta">
+          <span>✍️ {author || config.author.name}</span>
+          <span>📅 {formattedPubDate}</span>
+          {formattedUpdatedDate && <span>🔄 최종 수정: {formattedUpdatedDate}</span>}
+          <span>🏷️ {tags.join(', ')}</span>
+        </div>
+      </header>
+
+      <!-- 상단 광고 -->
+      {config.adsense.enabled && (
+        <div class="ad-container">
+          <div class="ad-label">광고</div>
+          <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-client={config.adsense.publisherId}
+            data-ad-slot="AUTO"
+            data-ad-format="auto"
+            data-full-width-responsive="true">
+          </ins>
+          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+      )}
+
+      <!-- 포스트 본문 -->
+      <div class="post-content">
+        <slot />
+      </div>
+
+      <!-- 하단 광고 -->
+      {config.adsense.enabled && (
+        <div class="ad-container">
+          <div class="ad-label">광고</div>
+          <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-client={config.adsense.publisherId}
+            data-ad-slot="AUTO"
+            data-ad-format="auto"
+            data-full-width-responsive="true">
+          </ins>
+          <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+      )}
+
+      <!-- 태그 -->
+      <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border);">
+        <strong style="font-size: 0.85rem;">태그:</strong>
+        {tags.map(tag => (
+          <a href={`/tag/${tag}/`} style="display:inline-block; margin: 0.25rem; padding: 0.2rem 0.6rem; background: var(--color-bg-secondary); border-radius: 4px; font-size: 0.8rem; color: var(--color-text-muted);">#{tag}</a>
+        ))}
+      </div>
+    </div>
+  </article>
+</BaseLayout>
