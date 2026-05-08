@@ -1,0 +1,111 @@
+---
+import '../styles/global.css';
+import config from '../../blog.config.js';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  type?: 'website' | 'article';
+  pubDate?: string;
+}
+
+const {
+  title = config.name,
+  description = config.description,
+  ogImage = `${config.siteUrl}/og-default.png`,
+  type = 'website',
+  pubDate,
+} = Astro.props;
+
+const fullTitle = title === config.name ? title : `${title} | ${config.name}`;
+const canonicalUrl = new URL(Astro.url.pathname, config.siteUrl).href;
+---
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- Primary Meta -->
+  <title>{fullTitle}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonicalUrl} />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content={type} />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonicalUrl} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:site_name" content={config.name} />
+  <meta property="og:locale" content={config.locale} />
+  {pubDate && <meta property="article:published_time" content={pubDate} />}
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={fullTitle} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+  <!-- Sitemap -->
+  <link rel="sitemap" href="/sitemap-index.xml" />
+
+  <!-- RSS -->
+  <link rel="alternate" type="application/rss+xml" title={config.name} href="/rss.xml" />
+
+  <!-- AdSense (승인 후 활성화) -->
+  {config.adsense.enabled && (
+    <script
+      async
+      src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${config.adsense.publisherId}`}
+      crossorigin="anonymous"
+    />
+  )}
+
+  <!-- 테마 색상 CSS 변수 주입 -->
+  <style define:vars={{ primary: config.theme.primary, accent: config.theme.accent }}>
+    :root {
+      --color-primary: var(--primary);
+      --color-accent: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <!-- 헤더 -->
+  <header class="site-header">
+    <div class="container inner">
+      <a class="logo" href="/">{config.name}</a>
+      <nav>
+        <a href="/">홈</a>
+        {config.subCategories.slice(0, 3).map(cat => (
+          <a href={`/category/${cat}/`}>{cat}</a>
+        ))}
+        <a href="/about/">소개</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 메인 콘텐츠 -->
+  <main>
+    <slot />
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="site-footer">
+    <div class="container inner">
+      <span>© {new Date().getFullYear()} {config.name}. All rights reserved.</span>
+      <nav>
+        <a href="/about/">소개</a>
+        <a href="/privacy-policy/">개인정보처리방침</a>
+        <a href="/contact/">문의</a>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
